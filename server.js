@@ -1,5 +1,8 @@
 const api = require("./api/api");
+const { createConnection } = require("./shared/services/mongodb");
 
-const server = api.listen(api.get("port"), () => {
-  console.log(`Express running → PORT ${server.address().port}`);
+createConnection().then(() => {
+  const server = api.listen(api.get("port"), () => {
+    console.log(`Express running → PORT ${server.address().port}`);
+  });
 });
