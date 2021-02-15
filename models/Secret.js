@@ -11,7 +11,11 @@ const schema = createSchema({
     type: String,
     trim: true,
   },
-  expires: {
+  hasPassword: {
+    type: Boolean,
+    default: false,
+  },
+  expiration: {
     type: Date,
     default: () => Date.now() + getMsFromMins(5),
     required: true,
