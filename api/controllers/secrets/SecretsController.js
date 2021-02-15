@@ -13,7 +13,7 @@ SecretsController.createSecret = async function (req, res) {
 
     const hasPassword = Boolean(password && password.length);
     const hashedPassword = hasPassword && (await argon2.hash(password));
-    const encryptedContent = await encrypt(hashedPassword, content);
+    const encryptedContent = await encrypt(content, hashedPassword);
 
     const secret = new Secret({
       content: encryptedContent,
