@@ -2,7 +2,7 @@ const { createModel, createSchema } = require("./utils");
 const { getMsFromMins } = require("../shared/utils/time");
 
 const schema = createSchema({
-  context: {
+  content: {
     type: String,
     required: true,
     trim: true,
