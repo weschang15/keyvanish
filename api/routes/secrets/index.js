@@ -3,7 +3,7 @@ const SecretsController = require("../../controllers/secrets/SecretsController")
 
 const router = Router();
 
-router.get("/secrets/:id", SecretsController.getSecret);
-router.post("/secrets", SecretsController.createSecret);
+router.get("/:id", SecretsController.getSecret);
+router.post("/", SecretsController.createSecret);
 
 module.exports = router;
