@@ -20,11 +20,11 @@ const getMsFromDays = (days) => days * getOneDayInMs();
 module.exports = {
   calcMs,
   multiplyIntoMs,
-  getMsFromSec,
+  getMsFromSecs,
   getOneMinInMs,
   getMsFromMins,
-  getOneHourInM,
-  getMsFromHour,
+  getOneHourInMs,
+  getMsFromHours,
   getOneDayInMs,
   getMsFromDays,
 };
