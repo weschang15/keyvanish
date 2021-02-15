@@ -42,6 +42,8 @@ SecretsController.getSecret = async function (req, res) {
     const { id } = req.params;
 
     const encryptedSecret = await Secret.findById(id)
+      .where("used")
+      .equals(false)
       .where("expiration")
       .gt(new Date(Date.now()))
       .exec();
@@ -81,10 +83,15 @@ SecretsController.getSecret = async function (req, res) {
       encryptedSecret.password
     );
 
-    const { content, password, ...rest } = encryptedSecret;
+    encryptedSecret.used = true;
+    await encryptedSecret.save();
+
     return res.status(201).json({
+      _id: encryptedSecret.id,
+      createdAt: encryptedSecret.createdAt,
+      updatedAt: encryptedSecret.updatedAt,
+      expiration: encryptedSecret.expiration,
       content: decryptedSecret,
-      ...rest,
     });
   } catch (error) {
     const { traceId, requestLogger } = getRequestLogger();
