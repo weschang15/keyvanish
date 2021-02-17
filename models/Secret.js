@@ -1,5 +1,5 @@
 const { createModel, createSchema } = require("./utils");
-const { getMsFromMins } = require("../shared/utils/time");
+const { getMsFromDays } = require("../shared/utils/time");
 
 const schema = createSchema(
   {
@@ -16,7 +16,7 @@ const schema = createSchema(
     },
     expiration: {
       type: Date,
-      default: () => Date.now() + getMsFromMins(5),
+      default: () => Date.now() + getMsFromDays(1),
       required: true,
     },
     used: {
