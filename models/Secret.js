@@ -13,10 +13,6 @@ const schema = createSchema({
     min: [8, "Password must be at least 8 characters long."],
     required: true,
   },
-  hasPassword: {
-    type: Boolean,
-    default: false,
-  },
   expiration: {
     type: Date,
     default: () => Date.now() + getMsFromMins(5),
