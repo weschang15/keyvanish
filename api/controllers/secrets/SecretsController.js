@@ -1,8 +1,9 @@
 const argon2 = require("argon2");
 
 const { Secret } = require("../../../models");
+const { agenda } = require("../../../shared/services/agenda");
 const { encrypt, decrypt } = require("../../../shared/services/encryption");
-const { getRequestLogger, logger } = require("../../../shared/services/logger");
+const { getRequestLogger } = require("../../../shared/services/logger");
 const { getMsFromDays } = require("../../../shared/utils/time");
 
 const SecretsController = {};
@@ -11,10 +12,16 @@ SecretsController.createSecret = async function (req, res) {
   try {
     const password = await argon2.hash(req.body.password);
     const content = await encrypt(req.body.content, password);
+    const expiration = new Date(
+      Date.now() + getMsFromDays(req.body.expiration)
+    );
 
-    const secret = new Secret({ content, password });
-    // TODO: add AgendaJS to run at user-specified expiration time which will mark Secret as expired and remove
+    const secret = new Secret({ content, password, expiration });
     await secret.save();
+
+    agenda.schedule(expiration, "expire secret message", {
+      secretId: secret.id,
+    });
 
     return res.status(201).json(secret);
   } catch (error) {
