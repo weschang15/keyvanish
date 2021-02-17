@@ -9,18 +9,10 @@ const SecretsController = {};
 
 SecretsController.createSecret = async function (req, res) {
   try {
-    const { content, password } = req.body;
+    const password = await argon2.hash(req.body.password);
+    const content = await encrypt(req.body.content, password);
 
-    const hasPassword = Boolean(password && password.length);
-    const hashedPassword = hasPassword && (await argon2.hash(password));
-    const encryptedContent = await encrypt(content, hashedPassword);
-
-    const secret = new Secret({
-      content: encryptedContent,
-      hasPassword,
-      ...(hasPassword && { password: hashedPassword }),
-    });
-
+    const secret = new Secret({ content, password });
     // TODO: add AgendaJS to run at user-specified expiration time which will mark Secret as expired and remove
     await secret.save();
 
@@ -55,27 +47,23 @@ SecretsController.getSecret = async function (req, res) {
       });
     }
 
-    const hasPassword = encryptedSecret.hasPassword;
+    if (!req.body.password) {
+      return res.status(403).json({
+        message: "This secret requires a password.",
+        errors: [],
+      });
+    }
 
-    if (hasPassword) {
-      if (!req.body.password) {
-        return res.status(403).json({
-          message: "This secret requires a password.",
-          errors: [],
-        });
-      }
+    const valid = await argon2.verify(
+      encryptedSecret.password,
+      req.body.password
+    );
 
-      const valid = await argon2.verify(
-        encryptedSecret.password,
-        req.body.password
-      );
-
-      if (!valid) {
-        return res.status(403).json({
-          message: "Double check your password.",
-          errors: [],
-        });
-      }
+    if (!valid) {
+      return res.status(403).json({
+        message: "Double check your password.",
+        errors: [],
+      });
     }
 
     const decryptedSecret = await decrypt(
@@ -87,10 +75,7 @@ SecretsController.getSecret = async function (req, res) {
     await encryptedSecret.save();
 
     return res.status(201).json({
-      _id: encryptedSecret.id,
-      createdAt: encryptedSecret.createdAt,
-      updatedAt: encryptedSecret.updatedAt,
-      expiration: encryptedSecret.expiration,
+      ...encryptedSecret.toJSON(),
       content: decryptedSecret,
     });
   } catch (error) {
