@@ -10,6 +10,8 @@ const schema = createSchema({
   password: {
     type: String,
     trim: true,
+    min: [8, "Password must be at least 8 characters long."],
+    required: true,
   },
   hasPassword: {
     type: Boolean,
