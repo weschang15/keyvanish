@@ -4,6 +4,7 @@ const { MONGODB_URI } = process.env;
 exports.createConnection = function (options = {}) {
   return mongoose.connect(MONGODB_URI, {
     useNewUrlParser: true,
+    useUnifiedTopology: true,
     ...options,
   });
 };
