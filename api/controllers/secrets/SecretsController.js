@@ -4,7 +4,7 @@ const { Secret } = require("../../../models");
 const { agenda } = require("../../../shared/services/agenda");
 const { encrypt, decrypt } = require("../../../shared/services/encryption");
 const { getRequestLogger } = require("../../../shared/services/logger");
-const { getMsFromDays } = require("../../../shared/utils/time");
+const { getMsFromMins } = require("../../../shared/utils/time");
 
 const SecretsController = {};
 
@@ -13,14 +13,14 @@ SecretsController.createSecret = async function (req, res) {
     const password = await argon2.hash(req.body.password);
     const content = await encrypt(req.body.content, password);
     const expiration = new Date(
-      Date.now() + getMsFromDays(req.body.expiration)
+      Date.now() + getMsFromMins(req.body.expiration)
     );
 
     const secret = new Secret({ content, password, expiration });
     await secret.save();
 
     agenda.schedule(expiration, "expire secret message", {
-      secretId: secret.id,
+      secretId: secret._id,
     });
 
     return res.status(201).json(secret);
@@ -29,8 +29,9 @@ SecretsController.createSecret = async function (req, res) {
 
     requestLogger.error(error);
     return res.status(500).json({
-      timestamp: Date.now(),
-      error: "Internal server error.",
+      timestamp: new Date(Date.now()),
+      message: "Internal server error.",
+      errors: [],
       traceId: traceId,
     });
   }
@@ -49,13 +50,16 @@ SecretsController.getSecret = async function (req, res) {
 
     if (!encryptedSecret) {
       return res.status(404).json({
+        timestamp: new Date(Date.now()),
         message:
           "Unknown secret. The requested secret could not be found or has expired.",
+        errors: [],
       });
     }
 
     if (!req.body.password) {
       return res.status(403).json({
+        timestamp: new Date(Date.now()),
         message: "This secret requires a password.",
         errors: [],
       });
@@ -68,6 +72,7 @@ SecretsController.getSecret = async function (req, res) {
 
     if (!valid) {
       return res.status(403).json({
+        timestamp: new Date(Date.now()),
         message: "Double check your password.",
         errors: [],
       });
@@ -91,7 +96,8 @@ SecretsController.getSecret = async function (req, res) {
     requestLogger.error(error);
     return res.status(500).json({
       timestamp: Date.now(),
-      error: "Internal server error.",
+      message: "Internal server error.",
+      errors: [],
       traceId: traceId,
     });
   }
