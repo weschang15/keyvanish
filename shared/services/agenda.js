@@ -19,4 +19,8 @@ function createJob(job) {
 
 createJob(expireSecrets);
 
+agenda.on("ready", async () => {
+  agenda.start();
+});
+
 module.exports = { agenda };
