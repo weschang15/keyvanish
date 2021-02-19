@@ -1,4 +1,5 @@
-const { createModel, createSchema } = require("./utils");
+const mongoose = require("mongoose");
+const { createSchema } = require("./utils");
 const { getMsFromDays } = require("../shared/utils/time");
 
 const schema = createSchema(
@@ -38,4 +39,4 @@ schema.methods.toJSON = function () {
   };
 };
 
-module.exports = createModel("Secret", schema);
+module.exports = mongoose.model("Secret", schema);
