@@ -1,9 +1,9 @@
 const argon2 = require("argon2");
-
 const { Secret } = require("../../../models");
-const { agenda } = require("../../../shared/services/agenda");
+const { QUEUE_EXPIRE_SECRET } = require("../../../shared/queues/expireSecret");
+const { createQueue } = require("../../../shared/services/bull");
 const { encrypt, decrypt } = require("../../../shared/services/encryption");
-const { getRequestLogger } = require("../../../shared/services/logger");
+const { getRequestLogger, logger } = require("../../../shared/services/logger");
 const { getMsFromMins } = require("../../../shared/utils/time");
 
 const SecretsController = {};
@@ -12,16 +12,27 @@ SecretsController.createSecret = async function (req, res) {
   try {
     const password = await argon2.hash(req.body.password);
     const content = await encrypt(req.body.content, password);
-    const expiration = new Date(
-      Date.now() + getMsFromMins(req.body.expiration)
-    );
+
+    const delay = getMsFromMins(req.body.expiration);
+    const expiration = new Date(Date.now() + delay);
 
     const secret = new Secret({ content, password, expiration });
     await secret.save();
 
-    agenda.schedule(expiration, "expire secret message", {
-      secretId: secret._id,
-    });
+    const queue = createQueue(QUEUE_EXPIRE_SECRET);
+
+    await queue.add(
+      {
+        secretId: secret._id,
+      },
+      {
+        delay,
+      }
+    );
+
+    // await agenda.schedule(expiration, "expire secret message", {
+    //   secretId: secret._id,
+    // });
 
     return res.status(201).json(secret);
   } catch (error) {

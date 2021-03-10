@@ -1,11 +1,11 @@
-const { agenda } = require("./shared/services/agenda");
+const queues = require("./shared/queues");
+const { createQueue } = require("./shared/services/bull");
 
-// process.on("SIGTERM", async () => {
-//   await agenda.stop();
-//   process.exit(0);
-// });
+(function () {
+  queues.forEach(({ queueName, queueProcessor }) => {
+    const queue = createQueue(queueName);
+    queue.process(queueName, 5, queueProcessor);
+  });
 
-// process.on("SIGINT", async () => {
-//   await agenda.stop();
-//   process.exit(0);
-// });
+  console.log(`Worker started`);
+})();
