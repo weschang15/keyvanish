@@ -1,10 +1,15 @@
 const { Queue, QueueScheduler } = require("bullmq");
+const { createRedis } = require("../shared/services/redis");
 const { QUEUE_NAME_EXPIRE_SECRET } = require("./queueNames");
 
 const queues = {
   [QUEUE_NAME_EXPIRE_SECRET]: {
-    queue: new Queue(QUEUE_NAME_EXPIRE_SECRET),
-    scheduler: new QueueScheduler(QUEUE_NAME_EXPIRE_SECRET),
+    queue: new Queue(QUEUE_NAME_EXPIRE_SECRET, {
+      connection: createRedis(),
+    }),
+    scheduler: new QueueScheduler(QUEUE_NAME_EXPIRE_SECRET, {
+      connection: createRedis(),
+    }),
   },
 };
 
