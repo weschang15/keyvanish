@@ -22,7 +22,7 @@
   "homepage": "https://github.com/weschang15/keyvanish#readme",
   "dependencies": {
     "argon2": "^0.27.1",
-    "bull": "^3.20.1",
+    "bullmq": "^1.14.8",
     "cors": "^2.8.5",
     "cryptr": "^6.0.2",
     "dotenv": "^8.2.0",
