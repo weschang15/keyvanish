@@ -12,7 +12,7 @@ SecretsController.createSecret = async function (req, res) {
     const password = await argon2.hash(req.body.password);
     const content = await encrypt(req.body.content, password);
 
-    const delay = getMsFromMins(req.body.expiration);
+    const delay = Number(req.body.expiration);
     const expiration = new Date(Date.now() + delay);
 
     const secret = new Secret({ content, password, expiration });
@@ -26,10 +26,6 @@ SecretsController.createSecret = async function (req, res) {
         delay,
       }
     );
-
-    // await agenda.schedule(expiration, "expire secret message", {
-    //   secretId: secret._id,
-    // });
 
     return res.status(201).json(secret);
   } catch (error) {
