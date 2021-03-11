@@ -1,7 +1,6 @@
 const argon2 = require("argon2");
 const { Secret } = require("../../../models");
-const { QUEUE_EXPIRE_SECRET } = require("../../../shared/queues/expireSecret");
-const { createQueue } = require("../../../shared/services/bull");
+const { addToExpireSecretQueue } = require("../../../queues");
 const { encrypt, decrypt } = require("../../../shared/services/encryption");
 const { getRequestLogger, logger } = require("../../../shared/services/logger");
 const { getMsFromMins } = require("../../../shared/utils/time");
@@ -19,9 +18,7 @@ SecretsController.createSecret = async function (req, res) {
     const secret = new Secret({ content, password, expiration });
     await secret.save();
 
-    const queue = createQueue(QUEUE_EXPIRE_SECRET);
-
-    await queue.add(
+    await addToExpireSecretQueue(
       {
         secretId: secret._id,
       },

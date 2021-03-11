@@ -1,11 +1,7 @@
-const queues = require("./shared/queues");
-const { createQueue } = require("./shared/services/bull");
+const { createConnection } = require("./shared/services/mongodb");
+const { startWorkers } = require("./workers");
 
-(function () {
-  queues.forEach(({ queueName, queueProcessor }) => {
-    const queue = createQueue(queueName);
-    queue.process(queueName, 5, queueProcessor);
-  });
-
+createConnection().then(() => {
+  startWorkers();
   console.log(`Worker started`);
-})();
+});
