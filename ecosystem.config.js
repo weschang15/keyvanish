@@ -3,7 +3,7 @@ module.exports = {
     {
       name: "Worker",
       script: "./worker.js",
-      node_args: "-r dotenv/config",
+      node_args: "-r dotenv/config dotenv_config_path=/.env",
       instances: 1,
       autorestart: true,
       watch: false,
@@ -19,7 +19,7 @@ module.exports = {
     {
       name: "API",
       script: "./server.js",
-      node_args: "-r dotenv/config",
+      node_args: "-r dotenv/config dotenv_config_path=/.env",
       instances: 1,
       autorestart: true,
       watch: false,
