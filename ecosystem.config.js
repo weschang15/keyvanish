@@ -17,7 +17,7 @@ module.exports = {
     },
     {
       name: "API",
-      script: "./start.js",
+      script: "./server.js",
       node_args: "-r dotenv/config",
       instances: 1,
       autorestart: true,
