@@ -6,7 +6,7 @@
   "private": "true",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "NODE_ENV=production node -r dotenv/config server",
+    "start": "pm2-runtime start ecosystem.config.js --env production",
     "dev:server": "nodemon -r dotenv/config server",
     "dev:worker": "nodemon -r dotenv/config worker"
   },
