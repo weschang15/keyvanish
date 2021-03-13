@@ -1,4 +1,4 @@
-const { createLogger, format, transports, Container } = require("winston");
+const { createLogger, format, transports } = require("winston");
 const { combine, timestamp, errors, prettyPrint, json, metadata } = format;
 const { v4 } = require("uuid");
 
@@ -14,7 +14,7 @@ const logger = createLogger({
   transports: [
     new transports.File({ filename: "error.log", level: "error" }),
     new transports.File({ filename: "debug.log", level: "debug" }),
-    ...(process.env.NODE_ENV !== "production" && [
+    ...(process.env.NODE_ENV === "development" && [
       new transports.Console({
         format: combine(errors({ stack: true }), timestamp(), prettyPrint()),
       }),
