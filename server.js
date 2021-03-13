@@ -1,3 +1,4 @@
+require("dotenv").config();
 const api = require("./api/api");
 const { createConnection } = require("./shared/services/mongodb");
 

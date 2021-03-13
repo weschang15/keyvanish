@@ -3,7 +3,6 @@ module.exports = {
     {
       name: "Worker",
       script: "./worker.js",
-      node_args: "-r dotenv/config",
       instances: 1,
       autorestart: true,
       watch: false,
@@ -18,7 +17,6 @@ module.exports = {
     {
       name: "API",
       script: "./server.js",
-      node_args: "-r dotenv/config",
       instances: 1,
       autorestart: true,
       watch: false,
