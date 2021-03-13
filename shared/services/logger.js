@@ -14,13 +14,16 @@ const logger = createLogger({
   transports: [
     new transports.File({ filename: "error.log", level: "error" }),
     new transports.File({ filename: "debug.log", level: "debug" }),
-    ...(process.env.NODE_ENV === "development" && [
-      new transports.Console({
-        format: combine(errors({ stack: true }), timestamp(), prettyPrint()),
-      }),
-    ]),
   ],
 });
+
+if (process.env.NODE_ENV !== "production") {
+  logger.add(
+    new transports.Console({
+      format: combine(errors({ stack: true }), timestamp(), prettyPrint()),
+    })
+  );
+}
 
 function getRequestLogger() {
   const traceId = createTraceId();
