@@ -1,4 +1,3 @@
-require("dotenv").config();
 const { createConnection } = require("./shared/services/mongodb");
 const { startWorkers } = require("./workers");
 

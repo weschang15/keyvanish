@@ -3,10 +3,11 @@ module.exports = {
     {
       name: "Worker",
       script: "./worker.js",
+      node_args: "-r dotenv/config",
       instances: 1,
       autorestart: true,
       watch: false,
-      exec_mode: "fork_mode",
+      exec_mode: "fork",
       max_memory_restart: "512M",
       env: {
         NODE_ENV: "development",
@@ -18,10 +19,11 @@ module.exports = {
     {
       name: "API",
       script: "./server.js",
+      node_args: "-r dotenv/config",
       instances: 1,
       autorestart: true,
       watch: false,
-      exec_mode: "fork_mode",
+      exec_mode: "fork",
       max_memory_restart: "512M",
       env: {
         NODE_ENV: "development",
