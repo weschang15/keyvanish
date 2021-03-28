@@ -3,7 +3,7 @@ const { getErrors } = require("../../shared/utils/getErrors");
 const { getMsFromMins, getMsFromDays } = require("../../shared/utils/time");
 
 const schema = yup.object().shape({
-  content: yup.string().required(),
+  content: yup.string().required().label("Content"),
   password: yup
     .string()
     .required()
@@ -36,10 +36,15 @@ exports.validateCreateSecret = async function (req, res, next) {
 
     return next();
   } catch (error) {
+    const errors = getErrors(error);
+    const count = Object.keys(errors).length;
     return res.status(400).json({
       timestamp: new Date(Date.now()),
-      message: "Validation error.",
-      errors: getErrors(error),
+      message:
+        count > 1
+          ? `${count} errors have occurred`
+          : `${count} error has occurred`,
+      errors,
     });
   }
 };

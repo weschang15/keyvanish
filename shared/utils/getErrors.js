@@ -2,7 +2,9 @@ const { ValidationError: YupValidationError } = require("yup");
 
 exports.getErrors = function (err) {
   if (err instanceof YupValidationError) {
-    return err.inner.map(({ path: param, message }) => ({ param, message }));
+    return err.inner.reduce((acc, { path: param, message }) => {
+      return { ...acc, [param]: { param, message } };
+    }, {});
   }
 
   if (err instanceof Error) {
