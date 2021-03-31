@@ -46,8 +46,6 @@ SecretsController.getSecret = async function (req, res) {
     const { id } = req.params;
 
     const encryptedSecret = await Secret.findById(id)
-      .where("used")
-      .equals(false)
       .where("expiration")
       .gt(new Date(Date.now()))
       .exec();
@@ -55,8 +53,16 @@ SecretsController.getSecret = async function (req, res) {
     if (!encryptedSecret) {
       return res.status(404).json({
         timestamp: new Date(Date.now()),
+        message: "Unknown secret. The requested secret could not be found.",
+        errors: [],
+      });
+    }
+
+    if (encryptedSecret.used) {
+      return res.status(403).json({
+        timestamp: new Date(Date.now()),
         message:
-          "Unknown secret. The requested secret could not be found or has expired.",
+          "The requested secret has already been viewed. For security reasons, you must notify the link sender that the secret has already been viewed.",
         errors: [],
       });
     }
