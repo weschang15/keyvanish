@@ -6,7 +6,7 @@ const {
 
 const router = Router();
 
-router.get("/:id", SecretsController.getSecret);
+router.patch("/:id", SecretsController.getSecret);
 router.post("/", validateCreateSecret, SecretsController.createSecret);
 
 module.exports = router;
